@@ -1,21 +1,80 @@
+from operator import truediv
+
+
 def carica_da_file(file_path):
     """Carica le foto dal file, creando un nuovo anno ogni volta che compare per la prima volta"""
-    # TODO
+    album = {}
+    elenco_foto = []
+
+
+    try:
+        infile = open(file_path, "r")
+        infile.readline()
+
+        for line in infile:
+            foto = line.split(",")
+            anno = int(foto[4])
+            if anno not in album:
+                album[anno] = []
+            album[anno].append(foto)
+    except FileNotFoundError:
+        return None
+    finally:
+        infile.close()
+    return album
 
 
 def aggiungi_foto(album, codice, titolo, autore, mese, anno, file_path):
     """Aggiunge una foto all'album, creando l'anno al volo se non è ancora presente"""
-    # TODO
+
+    if mese < 1 or mese > 12:
+        return None
+
+    for year in album:
+        for foto in album[year]:
+            if codice == foto[0]:
+                return None
+
+    foto = [codice, titolo, autore, mese, anno]
+
+    try:
+        outfile = open(file_path, "a")
+        stringa = codice + "," + titolo + "," + autore + "," + str(mese) + ',' + str(anno)+'\n'
+        #outfile.write(','.join(foto))
+        outfile.write(stringa)
+    except FileNotFoundError:
+        return None
+    finally:
+        outfile.close()
+
+    if anno not in album:
+        album[anno] = []
+
+    album[anno].append(foto)
+
+    return foto
 
 
 def cerca_foto(album, codice):
     """Cerca una foto nell'album dato il codice"""
-    # TODO
+
+    for year in album:
+        for foto in album[year]:
+            if codice == foto[0]:
+                return foto[0] + ', ' + foto[1] + ', ' + foto[2] + ', ' + str(foto[3]) + ', ' + str(foto[4])
+    return None
 
 
 def elenco_foto_anno_per_titolo(album, anno):
     """Ordina i titoli delle foto di un dato anno in ordine alfabetico"""
-    # TODO
+    titoli = []
+    if anno in album:
+        for foto in album[anno]:
+            titoli.append(foto[1])
+
+        return sorted(titoli)
+    else:
+        return None
 
 
 def main():
